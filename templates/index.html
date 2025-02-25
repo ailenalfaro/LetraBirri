@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Fernando Birri</title>
+    <style>
+        @font-face {
+            font-family: 'LuxSans';
+            src: url('lux-sans.ttf') format('truetype');
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'LuxSans', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #chat-container {
+            width: 400px;
+            height: 500px;
+            border: 2px solid #fff;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            text-align: left;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in forwards;
+        }
+        .user-message {
+            background: #444;
+            text-align: right;
+        }
+        .bot-message {
+            background: #222;
+            text-align: left;
+        }
+
+        #input-container {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #fff;
+            background: transparent;
+            color: #fff;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            cursor: pointer;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #ccc;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <img src="fernando-birri.jpg" alt="Fernando Birri" width="200" style="border-radius: 50%; box-shadow: 0 0 10px rgba(255,255,255,0.5);">
+    <h1 style="font-size: 24px; margin: 10px 0;">Chatbot de Fernando Birri</h1>
+    <div id="chat-container"></div>
+    <div id="input-container">
+        <input type="text" id="mensaje" placeholder="Escribe un mensaje...">
+        <button onclick="enviarMensaje()">Enviar</button>
+    </div>
+
+    <script>
+        function enviarMensaje() {
+            var mensaje = document.getElementById("mensaje").value;
+            var chatbox = document.getElementById("chat-container");
+
+            chatbox.innerHTML += `<div class='message user-message'>${mensaje}</div>`;
+
+            fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ mensaje: mensaje })
+            })
+            .then(response => response.json())
+            .then(data => {
+                setTimeout(() => {
+                    chatbox.innerHTML += `<div class='message bot-message'>${data.respuesta}</div>`;
+                    chatbox.scrollTop = chatbox.scrollHeight;
+                }, 1000);
+            });
+
+            document.getElementById("mensaje").value = "";
+        }
+    </script>
+</body>
+</html>
